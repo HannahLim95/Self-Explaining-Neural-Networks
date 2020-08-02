@@ -1,0 +1,23 @@
+#!/bin/bash
+
+#SBATCH --job-name=training
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=3
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=1:00:00
+#SBATCH --mem=60000M
+#SBATCH --partition=gpu_shared_course
+#SBATCH --gres=gpu:1
+
+module load 2019
+module load Miniconda2
+source activate FACT
+
+pip install ./
+
+for i in `seq 1 4`; do
+  srun python3 scripts/test.py |& tee -a "$SLURM_SUBMIT_DIR"/lisa_output/slurm/output_$i &
+done
+wait
+
+
